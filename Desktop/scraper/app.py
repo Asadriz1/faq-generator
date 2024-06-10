@@ -3,8 +3,14 @@ import requests
 import unicodedata
 from bs4 import BeautifulSoup
 import openai
+from dotenv import load_dotenv
+import os
 
-openai.api_key = "sk-proj-NYCYBw8aL6fLdGxYF6jnT3BlbkFJOUzlBuYU9iOjqJD854oW"
+# Load environment variables from .env file
+load_dotenv()
+
+# Get the API key from the environment variables
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def chat_with_gpt(prompt):
     try:
@@ -41,7 +47,7 @@ def scrape_content(url):
 def generate_faqs(content):
     if content == "Blocked by Zscaler":
         return "The request was blocked by Zscaler. Please try using a different network or a VPN."
-    prompt = f"Read the following content and generate potential FAQs that a merchant could ask tech support:\n\n{content}"
+    prompt = f"Read the following content and generate 20 detailed FAQs with answers that a merchant could ask tech support:\n\n{content}"
     st.write("### Debug: Generated Prompt")
     st.write(prompt)
     faqs = chat_with_gpt(prompt)
@@ -68,7 +74,7 @@ if st.button("Scrape and Generate FAQs"):
 
                 if content and "Error" not in content:
                     faqs = generate_faqs(content)
-                    st.write("### Generated FAQs")
+                    st.write("### Generated FAQs with Answers")
                     st.write(faqs)
                 else:
                     st.error(content)  # Show the error message directly
